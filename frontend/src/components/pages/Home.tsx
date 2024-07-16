@@ -2,6 +2,7 @@ import heroImage from "../../assets/respic.webp";
 import bgImage1 from "../../assets/bg-image-1.webp";
 import bgImage2 from "../../assets/bg-image-2.webp";
 import reserveTable from "../../assets/reserveTable.png";
+import Hero from "../Hero";
 
 const items = [
   {
@@ -22,7 +23,8 @@ const Home = () => {
   return (
     <div className=" w-screen h-max bg-[#80AF81] ">
       {/* hero seection */}
-      <div className="  relative w-full h-[400px] overflow-hidden bg-[#304463]">
+      <Hero />
+      {/* <div className="  relative w-full h-[400px] overflow-hidden bg-[#304463]">
         <img
           src={heroImage}
           className=" absolute inset-0  w-full h-full object-cover opacity-50"
@@ -31,7 +33,7 @@ const Home = () => {
         <div className=" absolute text-5xl inset-0 font-extrabold text-white flex justify-center top-20">
           <p>Little Lemon Restaurant</p>
         </div>
-      </div>
+      </div> */}
       {/* main section */}
       <div className="w-screen h-max relative">
         {/* sectn 1 */}
