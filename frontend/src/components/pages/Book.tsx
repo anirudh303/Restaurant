@@ -1,14 +1,12 @@
+import BookingForm from "../BookingForm";
 import Hero from "../Hero";
 
 const Book = () => {
   return (
-    <div className="container  ">
+    <div className="container flex w-screen  flex-col gap-2">
       <Hero />
       <h2 className="text-2xl font-bold mb-4">Book Now</h2>
-      <p>
-        Reserve your table today to enjoy a delightful dining experience at
-        Little Lemon Restaurant.
-      </p>
+      <BookingForm />
     </div>
   );
 };
