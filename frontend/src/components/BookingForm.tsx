@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { CalendarArrowDown } from 'lucide-react';
 
 const schema = z.object({
   date: z.date().min(new Date(), { message: "Date cannot be in the past" }),
@@ -12,6 +13,10 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
+
+type ValuePiece = Date | null;
+
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const generateTimeSlots = (selectedDate: Date): string[] => {
   const slots: string[] = [];
@@ -28,13 +33,14 @@ const generateTimeSlots = (selectedDate: Date): string[] => {
 };
 
 const getStartOfToday = (): Date => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
-  };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
 
 function BookingForm() {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -61,15 +67,17 @@ function BookingForm() {
       numberOfPeople: 1,
     });
     setShowTimeDropdown(false);
+    setShowCalendar(false);
   }, [reset]);
 
   const tileDisabled = useCallback(({ date, view }: { date: Date; view: string }) => 
     view === 'month' && date < getStartOfToday(),
   []);
 
-  const handleDateChange = useCallback((value: any) => {
+  const handleDateChange = useCallback((value: Date) => {
     setValue('date', value);
     setValue('time', '');
+    setShowCalendar(false);
   }, [setValue]);
 
   const handleTimeSelect = useCallback((slot: string) => {
@@ -78,64 +86,99 @@ function BookingForm() {
   }, [setValue]);
 
   return (
-    <form  className=" w-screen h-max flex"onSubmit={handleSubmit(onSubmit)}>
-      
-      <section className="flex gap-4">
-          {/* Date picker */}
-        <div className=" px-2 flex flex-col rounded-sm border-2">
-          <label htmlFor="date">Date:</label>
-          <Controller
-            control={control}
-            name="date"
-            render={({ field: { value } }) => (
-              <Calendar
-                onChange={(value)=>handleDateChange(value)}
-                value={value}
-                tileDisabled={tileDisabled}
-                minDate={new Date()}
+    <form className="w-screen h-max flex flex-col p-4" onSubmit={handleSubmit(onSubmit)}>
+      <section className="flex flex-wrap gap-4 mb-6">
+        {/* Date picker */}
+        <div className="relative flex flex-col gap-1 w-64">
+          <label htmlFor="date" className="font-medium">Select Date</label>
+          <div className="flex items-center border rounded-md overflow-hidden">
+            <input 
+              type="text" 
+              value={selectedDate.toLocaleDateString()} 
+              readOnly 
+              className="w-full p-2"
+            />
+            <button 
+              type="button" 
+              onClick={() => setShowCalendar(!showCalendar)}
+              className="p-2 bg-gray-100 hover:bg-gray-200"
+            >
+              <CalendarArrowDown />
+            </button>
+          </div>
+          {showCalendar && 
+            <div className="absolute z-10 mt-1 bg-white shadow-lg rounded-md overflow-hidden">
+              <Controller
+                control={control}
+                name="date"
+                render={({ field: { value } }) => (
+                  <Calendar
+                    onChange={(value) => handleDateChange(value)}
+                    value={value}
+                    tileDisabled={tileDisabled}
+                    minDate={new Date()}
+                  />
+                )}
               />
-            )}
-          />
-          {errors.date && <span>{errors.date.message}</span>}
+            </div>
+          }
+          {errors.date && <span className="text-red-500 text-sm">{errors.date.message}</span>}
         </div>
 
-        <div className= "px-2 flex flex-col rounded-sm border-2">
-          <label htmlFor="time">Time:</label>
-          <div>
-            <button type="button" onClick={() => setShowTimeDropdown(!showTimeDropdown)}>
+        {/* Time picker */}
+        <div className="flex flex-col gap-1 w-64">
+          <label htmlFor="time" className="font-medium">Time</label>
+          <div className="relative">
+            <button 
+              type="button" 
+              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+              className="w-full text-left p-2 border rounded-md"
+            >
               {watch('time') || 'Select Time'}
             </button>
             {showTimeDropdown && (
-              <div style={{ border: '1px solid black', padding: '10px' }}>
-                {availableTimeSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    type="button"
-                    onClick={() => handleTimeSelect(slot)}
-                  >
-                    {slot}
-                  </button>
-                ))}
+              <div className="absolute z-10 mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-2 w-full">
+                <div className="grid grid-cols-3 gap-2">
+                  {availableTimeSlots.map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => handleTimeSelect(slot)}
+                      className="p-2 border rounded-md hover:bg-gray-100"
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
           <input type="hidden" {...register('time')} />
-          {errors.time && <span>{errors.time.message}</span>}
+          {errors.time && <span className="text-red-500 text-sm">{errors.time.message}</span>}
         </div>
-        <div>
-          <label htmlFor="numberOfPeople">Number of People:</label>
+
+        {/* Number of people picker */}
+        <div className="flex flex-col gap-1 w-64">
+          <label htmlFor="numberOfPeople" className="font-medium">Number of People</label>
           <input
             type="number"
             id="numberOfPeople"
             {...register('numberOfPeople', { valueAsNumber: true })}
+            className="p-2 border rounded-md"
           />
-          {errors.numberOfPeople && <span>{errors.numberOfPeople.message}</span>}
+          {errors.numberOfPeople && <span className="text-red-500 text-sm">{errors.numberOfPeople.message}</span>}
         </div>
       </section>
 
-      <div>
-        <button type="submit">Book Table</button>
-        <button type="button" onClick={handleReset}>
+      <div className="flex gap-4">
+        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          Book Table
+        </button>
+        <button 
+          type="button" 
+          onClick={handleReset} 
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+        >
           ↺ Reset
         </button>
       </div>
