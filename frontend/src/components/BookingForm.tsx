@@ -78,57 +78,60 @@ function BookingForm() {
   }, [setValue]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="date">Date:</label>
-        <Controller
-          control={control}
-          name="date"
-          render={({ field: { value } }) => (
-            <Calendar
-              onChange={(value)=>handleDateChange(value)}
-              value={value}
-              tileDisabled={tileDisabled}
-              minDate={new Date()}
-            />
-          )}
-        />
-        {errors.date && <span>{errors.date.message}</span>}
-      </div>
-
-      <div>
-        <label htmlFor="time">Time:</label>
-        <div>
-          <button type="button" onClick={() => setShowTimeDropdown(!showTimeDropdown)}>
-            {watch('time') || 'Select Time'}
-          </button>
-          {showTimeDropdown && (
-            <div style={{ border: '1px solid black', padding: '10px' }}>
-              {availableTimeSlots.map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => handleTimeSelect(slot)}
-                >
-                  {slot}
-                </button>
-              ))}
-            </div>
-          )}
+    <form  className=" w-screen h-max flex"onSubmit={handleSubmit(onSubmit)}>
+      
+      <section className="flex gap-4">
+          {/* Date picker */}
+        <div className=" px-2 flex flex-col rounded-sm border-2">
+          <label htmlFor="date">Date:</label>
+          <Controller
+            control={control}
+            name="date"
+            render={({ field: { value } }) => (
+              <Calendar
+                onChange={(value)=>handleDateChange(value)}
+                value={value}
+                tileDisabled={tileDisabled}
+                minDate={new Date()}
+              />
+            )}
+          />
+          {errors.date && <span>{errors.date.message}</span>}
         </div>
-        <input type="hidden" {...register('time')} />
-        {errors.time && <span>{errors.time.message}</span>}
-      </div>
 
-      <div>
-        <label htmlFor="numberOfPeople">Number of People:</label>
-        <input
-          type="number"
-          id="numberOfPeople"
-          {...register('numberOfPeople', { valueAsNumber: true })}
-        />
-        {errors.numberOfPeople && <span>{errors.numberOfPeople.message}</span>}
-      </div>
+        <div className= "px-2 flex flex-col rounded-sm border-2">
+          <label htmlFor="time">Time:</label>
+          <div>
+            <button type="button" onClick={() => setShowTimeDropdown(!showTimeDropdown)}>
+              {watch('time') || 'Select Time'}
+            </button>
+            {showTimeDropdown && (
+              <div style={{ border: '1px solid black', padding: '10px' }}>
+                {availableTimeSlots.map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => handleTimeSelect(slot)}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <input type="hidden" {...register('time')} />
+          {errors.time && <span>{errors.time.message}</span>}
+        </div>
+        <div>
+          <label htmlFor="numberOfPeople">Number of People:</label>
+          <input
+            type="number"
+            id="numberOfPeople"
+            {...register('numberOfPeople', { valueAsNumber: true })}
+          />
+          {errors.numberOfPeople && <span>{errors.numberOfPeople.message}</span>}
+        </div>
+      </section>
 
       <div>
         <button type="submit">Book Table</button>
