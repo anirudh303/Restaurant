@@ -9,7 +9,7 @@ const App = () => {
   return (
     <main className="flex flex-col w-screen min-h-screen ">
       <Header />
-      <main className="flex-grow container mx-auto ">
+      <main className=" w-screen">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
