@@ -5,37 +5,19 @@ import * as z from 'zod';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CalendarIcon, Clock, Plus, Minus } from 'lucide-react';
+import {BookingFormSchema} from '../schemas/schema'
+import {generateTimeSlots} from '../utilities/utils'
 
-// schema
-const schema = z.object({
-  date: z.date().min(new Date(), { message: "Date cannot be in the past" }),
-  time: z.string().min(1, 'Time is required'),
-  numberOfPeople: z.number().int().positive().max(10, 'Maximum 10 people allowed'),
-});
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof BookingFormSchema>;
 
-// time slot generation
-const generateTimeSlots = (selectedDate: Date): string[] => {
-  const slots: string[] = [];
-  const now = new Date();
-  const isToday = selectedDate.toDateString() === now.toDateString();
-  let startHour = isToday ? now.getHours() + 1 : 11;
-  startHour = Math.max(startHour, 11);
-
-  for (let i = startHour; i <= 21; i++) {
-    slots.push(`${i}:00`);
-  }
-
-  return slots;
-};
 
 function BookingForm() {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(BookingFormSchema),
     defaultValues: {
       date: new Date(),
       time: '',
@@ -45,7 +27,7 @@ function BookingForm() {
 
   const selectedDate = watch('date');
   const numberOfPeople = watch('numberOfPeople');
-
+// creating time slots
   const availableTimeSlots = useMemo(() => generateTimeSlots(selectedDate), [selectedDate]);
 
   const onSubmit = (data: FormData) => {
@@ -78,9 +60,11 @@ function BookingForm() {
     setValue('numberOfPeople', Math.max(1, Math.min(10, (numberOfPeople || 0) + increment)));
   }, [setValue, numberOfPeople]);
 
+
+  
   return (
     <form className="w-screen h-max flex flex-col p-4" onSubmit={handleSubmit(onSubmit)}>
-      <section className="flex flex-wrap h-64 gap-4 mb-10 border-2">
+      <section className="flex  flex-col h-[400px] gap-4 mb-10 items-center ">
         <div className="relative flex flex-col gap-1 w-64 border-2">
           <label htmlFor="date" className="font-medium">Select Date</label>
           <Controller
