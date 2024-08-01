@@ -1,9 +1,9 @@
-import BookingForm from "../BookingForm";
-import Hero from "../Hero";
+import BookingForm from "../components/BookingForm";
+import Hero from "../components/Hero";
 
 const Book = () => {
   return (
-    <div className="container flex w-screen  flex-col gap-2">
+    <div className=" flex flex-col w-screen   gap-2">
       <Hero />
       <h2 className="text-2xl font-bold mb-4">Book Now</h2>
       <BookingForm />

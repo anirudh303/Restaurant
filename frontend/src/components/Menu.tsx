@@ -19,7 +19,7 @@ const MenuContainer = () => {
   }, []);
 
   return (
-    <div className="p-4">
+    <div className="">
       <h2 className="text-2xl font-bold mb-4">Menu</h2>
       <ul>
         {menuItems.map((item) => (

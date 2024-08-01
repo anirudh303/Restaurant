@@ -5,8 +5,8 @@ import * as z from 'zod';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CalendarIcon, Clock, Plus, Minus } from 'lucide-react';
-import {BookingFormSchema} from '../schemas/schema'
-import {generateTimeSlots} from '../utilities/utils'
+import {BookingFormSchema} from '../utils/schemas/schema'
+import {generateTimeSlots} from '../utils/utils'
 
 
 type FormData = z.infer<typeof BookingFormSchema>;
@@ -65,7 +65,7 @@ function BookingForm() {
   return (
     <form className="w-screen h-max flex flex-col p-4" onSubmit={handleSubmit(onSubmit)}>
       <section className="flex  flex-col h-[400px] gap-4 mb-10 items-center ">
-        <div className="relative flex flex-col gap-1 w-64 border-2">
+        <div className="relative flex flex-col gap-1 w-64 ">
           <label htmlFor="date" className="font-medium">Select Date</label>
           <Controller
             control={control}
